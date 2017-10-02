@@ -1,28 +1,10 @@
-Teensy 3.X Project Template
+Teensy Project Template (Slighty modified version of Teensy 3.X Project Template)
 ===========================
 
 Purpose
 -------
 
-An easy starting point for a Teensy 3.X project which might not fit inside the
-arduino build environment.
-
-
-Reasons to Use
---------------
-
-- You need to modify the teensy core
-- You don't love Java IDE's
-- You love Make
-- Because
-
-
-Setup
------
-
-Install the Teensy udev rule: `sudo cp tools/49-teensy.rules /etc/udev/rules.d/`
-
-Then unplug your Teensy and plug it back in.
+An all purpose Teensy project template to develop outside of the Arduino IDE.
 
 
 Using
@@ -35,6 +17,21 @@ Using
 5. Upload your code ```make upload```
 
 
+Directory Structure
+-------------------
+
+src/
+|_ main.cpp
+|_ module_dir/
+    |_ module_header.hpp
+    |_ src/
+        |_ module_header.cpp
+|_ module_dir_2/
+    |_ module_header_2.hpp
+    |_ src/
+        |_ module_header_2.cpp
+
+
 Make Targets
 ------------
 
@@ -44,6 +41,7 @@ Make Targets
 - `make post_compile` opens the launcher with the correct file
 - `make upload` uploads the hex file to a teensy board
 - `make reboot` reboots the teensy
+- `make sniff` communicates on serial /dev/cu.usbmodem2905331
 
 
 Where everything came from
@@ -61,3 +59,4 @@ Modifications to `Makefile` include
 - Calculate target name from current directory
 - Prettify rule output
 - Do not upload by default, only build
+- Added support for multi-directory level organization

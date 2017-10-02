@@ -1,15 +1,21 @@
 # The name of your project (used to name the compiled .hex file)
 TARGET = $(notdir $(CURDIR))
 
-# The teensy version to use, 30, 31, 35, 36, or LC
-TEENSY = 30
+# The teensy version to use, 30, 31 (also for 3.2), 35, 36, or LC
+TEENSY = LC
 
 # Set to 24000000, 48000000, or 96000000 to set CPU core speed
-TEENSY_CORE_SPEED = 48000000
+ifeq ($(TEENSY), LC)
+    TEENSY_CORE_SPEED = 48000000
+else ifeq ($(TEENSY), 31)
+    TEENSY_CORE_SPEED = 72000000
+else
+    TEENSY_CORE_SPEED = 48000000
+endif
 
 # Some libraries will require this to be defined
 # If you define this, you will break the default main.cpp
-#ARDUINO = 10600
+# ARDUINO = 10600
 
 # configurable options
 OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
@@ -111,12 +117,14 @@ TC_FILES := $(wildcard $(COREPATH)/*.c)
 TCPP_FILES := $(wildcard $(COREPATH)/*.cpp)
 C_FILES := $(wildcard src/*.c)
 CPP_FILES := $(wildcard src/*.cpp)
+SUB_C_FILES := $(wildcard src/*/src/*.c)
+SUB_CPP_FILES := $(wildcard src/*/src/*.cpp)
 INO_FILES := $(wildcard src/*.ino)
 
 # include paths for libraries
 L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
 
-SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
+SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(SUB_C_FILES:.c=.o) $(SUB_CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
 
 all: hex
@@ -132,6 +140,9 @@ reboot:
 	@-$(abspath $(TOOLSPATH))/teensy_reboot
 
 upload: post_compile reboot
+
+sniff: 
+	screen /dev/cu.usbmodem2905331 9600
 
 $(BUILDDIR)/%.o: %.c
 	@echo -e "[CC]\t$<"
